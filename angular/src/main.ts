@@ -1,4 +1,9 @@
-import { Component, enableProdMode, importProvidersFrom } from "@angular/core";
+import {
+  Component,
+  enableProdMode,
+  importProvidersFrom,
+  NgZone,
+} from "@angular/core";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { RouterModule } from "@angular/router";
 import { environment } from "./environments/environment";
@@ -18,6 +23,10 @@ class MainComponent {}
 
 bootstrapApplication(MainComponent, {
   providers: [
+    // {
+    //   provide: NgZone,
+    //   useValue: new NgZone({ shouldCoalesceEventChangeDetection: false }),
+    // },
     importProvidersFrom(
       RouterModule.forRoot([
         {

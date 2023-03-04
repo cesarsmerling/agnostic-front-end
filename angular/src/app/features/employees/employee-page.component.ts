@@ -1,6 +1,9 @@
+import { LocalDTO } from "./../../../../../common/src/schemas/locals-schema";
+import { loadLocals } from "./../../../../../common/src/signals/locals.signal";
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { SelectComponent } from "./external";
+import { ReadonlySignal } from "@preact/signals";
 
 @Component({
   selector: "app-employee-page",
@@ -10,8 +13,7 @@ import { SelectComponent } from "./external";
     <h2>Employee</h2>
     <label>Selected employee</label>
     <app-select
-      [dataSource]="localEmployees"
-      [value]="selected"
+      [dataSource]="locals.value.data || []"
       (onChange)="handleSelectChange($event)"
     >
       <ng-template #itemTemplate let-item>
@@ -22,29 +24,14 @@ import { SelectComponent } from "./external";
   styles: [],
 })
 export class EmployeePageComponent implements OnInit {
-  localEmployees = [
-    {
-      local: "local 1",
-      name: "Pepe",
-    },
-    {
-      local: "local 2",
-      name: "Juan",
-    },
-    {
-      local: "local 3",
-      name: "Pablo",
-    },
-  ];
-
-  selected = {
-    local: "local 2",
-    name: "Juan",
-  }; //this.localEmployees[1];
+  private localsSignal = loadLocals;
+  locals = this.localsSignal.state;
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    this.localsSignal.run();
+  }
 
   handleSelectChange(event: any) {
     console.log(event);

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "ES6",
+    "target": "ES5",
+    "lib": ["ES2022", "DOM"],
+    "declaration": true,
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "outDir": "./dist/lib",
+    "moduleResolution": "node",
+    "composite": true,
+    "declarationMap": true,
+    "paths": {
+      "@agfe/common": ["./"],
+      "@agfe/common/*": ["./*"]
+    },
+    "strict": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/test/**/*"]
+}

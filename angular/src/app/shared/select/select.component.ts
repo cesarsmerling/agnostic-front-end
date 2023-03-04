@@ -47,7 +47,6 @@ export class SelectComponent<T> implements OnChanges {
   @Output() onChange = new EventEmitter<T>();
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log("changes", changes);
     if (changes["value"] && this.dataSource) {
       this.selectedIndex = this.dataSource.findIndex((item) =>
         AppUtils.isEqual(item, changes["value"].currentValue)

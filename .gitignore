@@ -43,3 +43,6 @@ angular/typings
 # System files
 angular/.DS_Store
 angular/Thumbs.db
+
+server/node_modules
+server/dist
