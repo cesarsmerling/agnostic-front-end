@@ -1,3 +1,4 @@
+import { time } from "console";
 import { NgContext } from "./ng-signal-context";
 
 // type ObservableType<T> = T extends Observable<infer U> ? U : never;
@@ -9,7 +10,7 @@ class AsyncContextMethods {
   private _runningRejacatable: boolean = false;
 
   //For switch
-  private prevPromise!: Promise<any>;
+  prevPromise!: any;
 
   get isRunning() {
     return this._runningRejacatable;
@@ -38,32 +39,27 @@ class AsyncContextMethods {
     return promise;
   }
 
-  switch<T>(asyncCall: () => Promise<T>): Promise<T> {
+  switch(asyncCall: () => Promise<any>): Promise<any> {
     if (this.prevPromise != null) {
-      this.makeCancelable(this.prevPromise).cancel();
+      this.prevPromise.cancel();
     }
 
-    const promise = asyncCall();
-    this.prevPromise = promise;
+    this.prevPromise = this.makeCancelable(asyncCall);
 
-    return promise;
+    return this.prevPromise.promise;
   }
 
-  private makeCancelable(promise: Promise<any>) {
-    let isCanceled = false;
-
-    const wrappedPromise = new Promise((resolve, reject) => {
-      promise.then(
-        (value) =>
-          isCanceled ? reject({ isCanceled, value }) : resolve(value),
-        (error) => reject(error)
-      );
+  private makeCancelable(asyncCall: () => Promise<any>) {
+    let switchPromiseRes = (args: any) => {};
+    const switchPromise = new Promise((res, rej) => {
+      switchPromiseRes = res;
+      setTimeout(() => res(0), 10000);
     });
 
     return {
-      promise: wrappedPromise,
-      cancel() {
-        isCanceled = true;
+      promise: Promise.race([asyncCall(), switchPromise]),
+      cancel: () => {
+        switchPromiseRes(100);
       },
     };
   }
@@ -95,24 +91,24 @@ class AsyncContext<SuccessObj, ErrorObj> {
 
     return (...args: Parameters<T>) => {
       this._cx.signal("loading").value = true;
-      asyncMethods.switch(() =>
-        runFn(...args)
-          .then((ret) => {
-            if (ret) {
-              this._cx.signal("success").value = ret;
-            }
-            this._cx.signal("loading").value = false;
-          })
-          .catch((error) => {
-            if (errFn) {
-              this._cx.signal("error").value = errFn({
-                error,
-                args,
-              });
-            }
-            this._cx.signal("loading").value = false;
-          })
-      );
+      asyncMethods
+        .switch(() => runFn(...args))
+        .then((ret) => {
+          console.log("Resolve", ret);
+          if (ret) {
+            this._cx.signal("success").value = ret;
+          }
+          this._cx.signal("loading").value = false;
+        })
+        .catch((error) => {
+          if (errFn) {
+            this._cx.signal("error").value = errFn({
+              error,
+              args,
+            });
+          }
+          this._cx.signal("loading").value = false;
+        });
     };
   }
 }

@@ -12,6 +12,14 @@ import { UsersAsyncsService } from "./app-contexts/user-async";
   template: `
     <h4>Async Effects</h4>
 
+    <button (click)="handleReject()">Reject with USer 2</button>
+    <button (click)="handleReject2()">Reject with USer 1</button>
+    <button (click)="handleSwitch()">Switch</button>
+    <button (click)="handleConcat()">Concat</button>
+    <button (click)="handleMerge()">Merge</button>
+
+    <br />
+
     <ng-container *ngIf="loading?.value; else user"> Loading.. </ng-container>
 
     <ng-template #user>
@@ -21,12 +29,6 @@ import { UsersAsyncsService } from "./app-contexts/user-async";
     </ng-template>
 
     <p *ngIf="error.value">Error: {{ error.value | json }}</p>
-
-    <button (click)="handleReject()">Reject with USer 2</button>
-    <button (click)="handleReject2()">Reject with USer 1</button>
-    <button (click)="handleSwitch()">Switch</button>
-    <button (click)="handleConcat()">Concat</button>
-    <button (click)="handleMerge()">Merge</button>
   `,
   styles: [],
   providers: [
